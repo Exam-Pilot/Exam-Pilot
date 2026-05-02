@@ -3,42 +3,89 @@
 <head>
   <title>Study Pilot</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    textarea { width: 100%; height: 100px; }
-    button { margin-top: 10px; padding: 10px; }
-    .box { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .box {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #1e293b;
+    }
   </style>
 </head>
 <body>
 
+<div class="container">
+
 <h1>Study Pilot</h1>
 
-<h3>1. Paste Notes</h3>
+<h3>Paste Notes</h3>
 <textarea id="notes"></textarea>
 <button onclick="generateFlashcards()">Generate Flashcards</button>
 
 <div class="box" id="flashcards"></div>
 
-<h3>2. Quiz</h3>
+<h3>Quiz</h3>
 <button onclick="startQuiz()">Start Quiz</button>
 <div class="box" id="quiz"></div>
 
-<h3>3. Study Plan</h3>
+<h3>Study Plan</h3>
 <button onclick="generatePlan()">Generate Plan</button>
 <div class="box" id="plan"></div>
+
+</div>
 
 <script>
 let cards = [];
 let current = 0;
 let score = 0;
 
-// Fake flashcard generator (replace with AI later)
+// Better flashcard logic
 function generateFlashcards() {
   let text = document.getElementById("notes").value;
-  cards = text.split(".").map(t => t.trim()).filter(t => t);
+
+  cards = text.split(".")
+    .map(t => t.trim())
+    .filter(t => t.length > 10);
 
   document.getElementById("flashcards").innerHTML =
-    cards.map(c => "<p>Q: " + c + "?</p>").join("");
+    cards.map(c => `<div>• ${c}</div>`).join("");
 }
 
 // Quiz
@@ -49,16 +96,21 @@ function startQuiz() {
 }
 
 function showQuestion() {
+  if (cards.length === 0) {
+    document.getElementById("quiz").innerHTML = "Add notes first.";
+    return;
+  }
+
   if (current >= cards.length) {
     document.getElementById("quiz").innerHTML =
-      "Finished! Score: " + score;
+      `Finished! Score: ${score}/${cards.length}`;
     return;
   }
 
   document.getElementById("quiz").innerHTML = `
-    <p>${cards[current]}?</p>
-    <button onclick="correct()">I got it</button>
-    <button onclick="wrong()">I got it wrong</button>
+    <p>${cards[current]}</p>
+    <button onclick="correct()">I knew it</button>
+    <button onclick="wrong()">I didn’t</button>
   `;
 }
 
@@ -73,14 +125,23 @@ function wrong() {
   showQuestion();
 }
 
-// Study plan
+// Better study plan
 function generatePlan() {
+  if (cards.length === 0) {
+    document.getElementById("plan").innerText = "Add notes first.";
+    return;
+  }
+
+  let accuracy = score / cards.length;
+
   let plan = "";
 
-  if (score < cards.length / 2) {
-    plan = "Focus heavily on this topic (1 hour)";
+  if (accuracy < 0.5) {
+    plan = "You need deep focus. Study this for 1 hour with full attention.";
+  } else if (accuracy < 0.75) {
+    plan = "You're improving. Study for 40 minutes and review weak parts.";
   } else {
-    plan = "Light review (30 mins)";
+    plan = "You're strong here. Quick 20 min revision is enough.";
   }
 
   document.getElementById("plan").innerText = plan;
