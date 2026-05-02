@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Study Pilot</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    textarea { width: 100%; height: 100px; }
+    button { margin-top: 10px; padding: 10px; }
+    .box { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+<h1>Study Pilot</h1>
+
+<h3>1. Paste Notes</h3>
+<textarea id="notes"></textarea>
+<button onclick="generateFlashcards()">Generate Flashcards</button>
+
+<div class="box" id="flashcards"></div>
+
+<h3>2. Quiz</h3>
+<button onclick="startQuiz()">Start Quiz</button>
+<div class="box" id="quiz"></div>
+
+<h3>3. Study Plan</h3>
+<button onclick="generatePlan()">Generate Plan</button>
+<div class="box" id="plan"></div>
+
+<script>
+let cards = [];
+let current = 0;
+let score = 0;
+
+// Fake flashcard generator (replace with AI later)
+function generateFlashcards() {
+  let text = document.getElementById("notes").value;
+  cards = text.split(".").map(t => t.trim()).filter(t => t);
+
+  document.getElementById("flashcards").innerHTML =
+    cards.map(c => "<p>Q: " + c + "?</p>").join("");
+}
+
+// Quiz
+function startQuiz() {
+  current = 0;
+  score = 0;
+  showQuestion();
+}
+
+function showQuestion() {
+  if (current >= cards.length) {
+    document.getElementById("quiz").innerHTML =
+      "Finished! Score: " + score;
+    return;
+  }
+
+  document.getElementById("quiz").innerHTML = `
+    <p>${cards[current]}?</p>
+    <button onclick="correct()">I got it</button>
+    <button onclick="wrong()">I got it wrong</button>
+  `;
+}
+
+function correct() {
+  score++;
+  current++;
+  showQuestion();
+}
+
+function wrong() {
+  current++;
+  showQuestion();
+}
+
+// Study plan
+function generatePlan() {
+  let plan = "";
+
+  if (score < cards.length / 2) {
+    plan = "Focus heavily on this topic (1 hour)";
+  } else {
+    plan = "Light review (30 mins)";
+  }
+
+  document.getElementById("plan").innerText = plan;
+}
+</script>
+
+</body>
+</html>
